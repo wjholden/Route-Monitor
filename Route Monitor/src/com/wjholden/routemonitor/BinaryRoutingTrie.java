@@ -43,7 +43,9 @@ public class BinaryRoutingTrie implements Trie {
         
         // I can't help myself. Memoization improves performance and
         // the use of Dynamic Programming is a nod to Richard Bellman.
-        this.population = 1 + (children[0] == null ? 0 : children[0].population) + 
+        // Count this route only if it has a reachable metric.
+        this.population = (metric > 0 || metric < 16 ? 1 : 0) + 
+                (children[0] == null ? 0 : children[0].population) + 
                 (children[1] == null ? 0 : children[1].population);
     }
     
