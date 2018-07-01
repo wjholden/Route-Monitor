@@ -14,14 +14,14 @@ public class BinaryRoutingTrie implements Trie {
     private int metric, population;
     private final long id;
     private static long counter = 0;
-    private Instant modified;
+    private Instant modified, lastSeen;
     
     public BinaryRoutingTrie() {
         children = new BinaryRoutingTrie[2];
         metric = -1;
         id = counter;
         counter++;
-        modified = Instant.EPOCH;
+        modified = lastSeen = Instant.EPOCH;
         population = 1;
     }
     
@@ -35,6 +35,8 @@ public class BinaryRoutingTrie implements Trie {
                     System.out.printf("%s\t%-19s\t%2d%n", modified, prefix, metric);
                 }
             }
+            // always update the last seen time, even if we don't change anything
+            lastSeen = Instant.now();
         } else {
             int i = (ip >>> 31);
             if (children[i] == null) children[i] = new BinaryRoutingTrie();
@@ -120,6 +122,25 @@ public class BinaryRoutingTrie implements Trie {
         metric = -1;
         population = 1;
         modified = Instant.now();
+    }
+    
+    @Override
+    public boolean purge(Duration timeout) {
+        // Assume that we are not on a path to a usable route.
+        // If either of our children is on a path to a usable route then this
+        // node should not be purged. Also, if this node was seen (implying
+        // we have a nonnegative metric) recently then we are a usable route.
+        
+        boolean onPath = false;
+        for (int i = 0 ; i < 2 ; i++) {
+            if (children[i] != null) {
+                boolean b = children[i].purge(timeout);
+                if (!b) children[i] = null;
+                onPath |= b;
+            }
+        }
+        onPath |= Duration.between(lastSeen, Instant.now()).compareTo(timeout) < 0;
+        return onPath;
     }
     
     @Override

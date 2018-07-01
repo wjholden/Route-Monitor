@@ -7,6 +7,9 @@ import java.net.InetAddress;
 import java.net.MulticastSocket;
 import java.net.UnknownHostException;
 import java.nio.ByteBuffer;
+import java.time.Duration;
+import java.util.Timer;
+import java.util.TimerTask;
 
 /**
  *
@@ -19,11 +22,26 @@ public class RIP implements Runnable, Closeable {
     private static final int PORT = 520;
     private static final int MTU = 1500;
     private MulticastSocket socket;
+    private static final Duration TIMEOUT = Duration.ofSeconds(180);
     
     public RIP(Trie trie) throws UnknownHostException {
         this.trie = trie;
         GROUP = InetAddress.getByName("224.0.0.9");
+        
+        // a timer to try to purge the trie of any routes learned more than
+        // 180 seconds ago.
+        Timer timer = new Timer("RIP Timeout", true);
+        timer.schedule(new TimerTask() {
+
+            @Override
+            public void run() {
+                trie.purge(TIMEOUT);
+            }
+            
+        }, 10000, 10000); // every 10 seconds
     }
+    
+    
     
     static void parse(Trie trie, ByteBuffer buffer) {
         byte command = buffer.get();

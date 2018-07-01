@@ -1,5 +1,6 @@
 package com.wjholden.routemonitor;
 
+import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.Graphics;
 import java.awt.event.ActionEvent;
@@ -34,6 +35,7 @@ public class SupernetPanel extends JPanel {
         width = (32 - prefixLength) - height;
         dimension = new Dimension(1 << width, 1 << height);
         lastSupernetPopulation = -1;
+        this.setBackground(Color.BLACK);
         
         Timer timer = new javax.swing.Timer(0, this::updateScreen);
         timer.setRepeats(true);
@@ -68,7 +70,9 @@ public class SupernetPanel extends JPanel {
         BufferedImage img = new BufferedImage(dimension.width, dimension.height, BufferedImage.TYPE_INT_RGB);
         Trie subtrie = trie.subtrie(ip, mask);
         
-        if (subtrie == null) return;
+        if (subtrie == null) {
+            return;
+        }
         
         for (int x = 0 ; x < dimension.width ; x++) {
             for (int y = 0 ; y < dimension.height ; y++) {

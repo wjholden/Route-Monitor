@@ -15,4 +15,5 @@ public interface Trie {
     Color find(int ip, Duration change);
     int size();
     void clear();
+    boolean purge(Duration timeout);
 }
