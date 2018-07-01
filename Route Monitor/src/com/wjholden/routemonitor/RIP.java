@@ -41,9 +41,7 @@ public class RIP implements Runnable, Closeable {
         }, 10000, 10000); // every 10 seconds
     }
     
-    
-    
-    static void parse(Trie trie, ByteBuffer buffer) {
+    private static void parse(Trie trie, ByteBuffer buffer) {
         byte command = buffer.get();
         byte version = buffer.get();
         short mustBeZero = buffer.getShort();

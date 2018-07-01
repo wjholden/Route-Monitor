@@ -117,7 +117,7 @@ public class BinaryRoutingTrie implements Trie {
     }
     
     @Override
-    public void clear() {
+    public synchronized void clear() {
         children[0] = children[1] = null;
         metric = -1;
         population = 1;
@@ -125,7 +125,7 @@ public class BinaryRoutingTrie implements Trie {
     }
     
     @Override
-    public boolean purge(Duration timeout) {
+    public synchronized boolean purge(Duration timeout) {
         // Assume that we are not on a path to a usable route.
         // If either of our children is on a path to a usable route then this
         // node should not be purged. Also, if this node was seen (implying
