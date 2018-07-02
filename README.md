@@ -3,13 +3,36 @@ This program uses RIPv2 to monitor the health of a network. The program is writt
 
 ![Supernet Monitor](https://pbs.twimg.com/media/DhAb8qDUcAAHdlm.jpg:large)
 
-Usage: `java -jar Route_Monitor.jar [ip-address subnet-mask]*`
+# Usage
+
+Provide the supernets in dotted-decimal form as command-line arguments.
+
+`java -jar Route_Monitor.jar [ip-address subnet-mask]*`
 
 Example: `java -jar Route_Monitor.jar 10.0.0.0 255.255.0.0 172.16.0.0 255.255.0.0 192.168.0.0 255.255.0.0 10.128.0.0 255.255.0.0 172.31.0.0 255.255.0.0`
 
 Any size supernet can be monitored but the design focuses on /16's.
 
 Press 'f' to toggle fullscreen, 'q' to quit, and 'c' to clear the routing table.
+
+# Configuration
+
+The router must not advertise a default route. A 0.0.0.0/0 route will turn every pixel white. Disable automatic summarization. Use a [prefix list](https://www.cisco.com/c/en/us/support/docs/ip/interior-gateway-routing-protocol-igrp/9105-34.html) to deny the default route and permit everything else. This program silently ignores authentication. It might be a good idea to configure both [authentication](https://www.cisco.com/c/en/us/support/docs/ip/routing-information-protocol-rip/13719-50.html) and an inbound ACL to prevent malicious behavior.
+
+`ip prefix-list NO-DEFAULT seq 5 deny 0.0.0.0/0
+ip prefix-list NO-DEFAULT seq 10 permit 0.0.0.0/0 ge 1
+
+access-list 1 deny any
+
+router rip
+ version 2
+ no auto-summary
+ distribute-list prefix NO-DEFAULT out
+ distribute-list 1 in`
+ 
+Authentication is silently 
+
+# Gory details
 
 The backing data structure is a custom binary trie.
 
