@@ -61,7 +61,7 @@ public class RIP implements Runnable, Closeable {
                     int nextHop = buffer.getInt();
                     int metric = buffer.getInt();
                     //System.out.printf("Received route %s/%s%n", IP.intToString(ip), IP.intToString(mask));
-                    trie.set(ip, mask, metric, IP.intToString(ip) + "/" + Integer.bitCount(mask));
+                    trie.set(ip, mask, metric, IP.toString(ip) + "/" + Integer.bitCount(mask));
                 } else if (addressFamily == 2 && buffer.remaining() < 20) {
                     throw new RuntimeException("Not enough bytes in buffer!");
                 }

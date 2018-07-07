@@ -22,7 +22,7 @@ public class BinaryRoutingTrie implements Trie {
         id = counter;
         counter++;
         modified = lastSeen = Instant.EPOCH;
-        population = 1;
+        population = 0;
     }
     
     @Override
@@ -43,6 +43,10 @@ public class BinaryRoutingTrie implements Trie {
             children[i].set(ip << 1, mask << 1, metric, prefix);
         }
         
+        this.setPopulation();
+    }
+    
+    private void setPopulation() {
         // I can't help myself. Memoization improves performance and
         // the use of Dynamic Programming is a nod to Richard Bellman.
         // Count this route only if it has a reachable metric.
@@ -120,7 +124,7 @@ public class BinaryRoutingTrie implements Trie {
     public synchronized void clear() {
         children[0] = children[1] = null;
         metric = -1;
-        population = 1;
+        population = 0;
         modified = Instant.now();
     }
     
@@ -139,6 +143,9 @@ public class BinaryRoutingTrie implements Trie {
                 onPath |= b;
             }
         }
+        
+        this.setPopulation();
+        
         onPath |= Duration.between(lastSeen, Instant.now()).compareTo(timeout) < 0;
         return onPath;
     }
@@ -159,7 +166,7 @@ public class BinaryRoutingTrie implements Trie {
         BinaryRoutingTrie t = new BinaryRoutingTrie();
         //t.set(IP.stringToInt("0.0.0.0"), 0, (byte) 15);
         
-        t.set(IP.stringToInt("192.168.0.0"), 0xffffff00, (byte)5);
+        t.set(IP.toInteger("192.168.0.0"), 0xffffff00, (byte)5);
         /*
         t.set(IP.stringToInt("192.168.1.0"), 0xffffff00, (byte)13);
         t.set(IP.stringToInt("10.0.0.0"), 0xff000000, (byte)7);
@@ -168,9 +175,9 @@ public class BinaryRoutingTrie implements Trie {
         t.set(IP.stringToInt("172.16.34.12"), 0xffffffff, (byte)16);
         */
         
-        System.out.println(t.find(IP.stringToInt("192.168.0.0")).metric);
-        t.set(IP.stringToInt("192.168.0.0"), 0xffffff00, (byte)5);
-        System.out.println(t.find(IP.stringToInt("192.168.0.0")).metric);
+        System.out.println(t.find(IP.toInteger("192.168.0.0")).metric);
+        t.set(IP.toInteger("192.168.0.0"), 0xffffff00, (byte)5);
+        System.out.println(t.find(IP.toInteger("192.168.0.0")).metric);
         
         /*
         System.out.println("digraph {");
