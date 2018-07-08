@@ -23,7 +23,7 @@ public class SupernetPanel extends JPanel {
     private final int ip, mask;
     private final int prefixLength;
     protected final String prefix;
-    private int lastSupernetPopulation;
+    private double lastSupernetPopulation;
     private final int height, width;
     private final AffineTransform transform;
     private static Duration colorChangeInterval = Duration.ofMinutes(1);
@@ -42,12 +42,12 @@ public class SupernetPanel extends JPanel {
         
         Timer timer = new javax.swing.Timer(0, this::updateScreen);
         timer.setRepeats(true);
-        timer.setDelay(500);
+        timer.setDelay(100);
         timer.start();
     }
     
     private void updateScreen(ActionEvent e) {
-        int n = trie.size();
+        double n = trie.population();
         
         // This mess is all about helping the environment by using less energy.
         // We want a low-latency user interface, but we don't need to waste
@@ -55,14 +55,16 @@ public class SupernetPanel extends JPanel {
         // Update the screen when the size of the trie changed or 1/10 chance.
         // This seemingly minor tweak considerably reduced CPU usage in testing
         // from 10% to about 1-2%.
+        //
+        // Change: now that the population is a double we can tell the difference
+        // between when a route gets poised. No need for random repaints.
+        // Also allows for faster swing timer since this method is effectively
+        // free if no painting needs to be done.
         if (n != lastSupernetPopulation) {
             this.repaint();
             lastSupernetPopulation = n;
         }
         
-        if (Math.random() < 0.05) {
-            this.repaint();
-        }
     }
     
 

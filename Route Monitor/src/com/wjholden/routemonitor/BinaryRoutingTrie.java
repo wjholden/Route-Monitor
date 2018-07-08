@@ -12,7 +12,8 @@ import java.util.Arrays;
 public class BinaryRoutingTrie implements Trie {
 
     private final BinaryRoutingTrie children[];
-    private int metric, population;
+    private int metric;
+    private double population;
     private final long id;
     private static long counter = 0;
     private Instant modified, lastSeen;
@@ -57,7 +58,10 @@ public class BinaryRoutingTrie implements Trie {
         // I can't help myself. Memoization improves performance and
         // the use of Dynamic Programming is a nod to Richard Bellman.
         // Count this route only if it has a reachable metric.
+        //
+        // Poisoned routes are worth 1/1,000,000 of a size.
         this.population = (metric > 0 && metric < 16 ? 1 : 0)
+                + (metric == 16 ? 1e-6 : 0)
                 + (children[0] == null ? 0 : children[0].population)
                 + (children[1] == null ? 0 : children[1].population);
     }
@@ -121,7 +125,7 @@ public class BinaryRoutingTrie implements Trie {
     }
 
     @Override
-    public int size() {
+    public double population() {
         return this.population;
     }
 

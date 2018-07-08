@@ -13,7 +13,7 @@ public interface Trie {
     Trie find(int ip);
     Color find(int ip, Duration change);
     int[] color(int ip, int mask, Duration change);
-    int size();
+    double population();
     void clear();
     void purge(Duration timeout);
 }
