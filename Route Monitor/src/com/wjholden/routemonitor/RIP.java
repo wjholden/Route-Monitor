@@ -8,6 +8,7 @@ import java.net.MulticastSocket;
 import java.net.UnknownHostException;
 import java.nio.ByteBuffer;
 import java.time.Duration;
+import java.time.Instant;
 import java.util.Timer;
 import java.util.TimerTask;
 
@@ -60,8 +61,9 @@ public class RIP implements Runnable, Closeable {
                     int mask = buffer.getInt();
                     int nextHop = buffer.getInt();
                     int metric = buffer.getInt();
-                    //System.out.printf("Received route %s/%s%n", IP.intToString(ip), IP.intToString(mask));
-                    trie.set(ip, mask, metric, IP.toString(ip) + "/" + Integer.bitCount(mask));
+                    if (trie.set(ip, mask, metric)) {                    
+                        System.out.printf("%s\t%-19s\t%2d%n", Instant.now(), IP.toString(ip) + "/" + Integer.bitCount(mask), metric);
+                    }
                 } else if (addressFamily == 2 && buffer.remaining() < 20) {
                     throw new RuntimeException("Not enough bytes in buffer!");
                 }

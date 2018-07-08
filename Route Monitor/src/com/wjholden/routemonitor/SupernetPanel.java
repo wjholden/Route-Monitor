@@ -75,7 +75,11 @@ public class SupernetPanel extends JPanel {
     @Override
     protected void paintComponent(Graphics g) {
         super.paintComponent(g);
-        
+        //paintIterateAndRecurse(g);
+        paintRecurseAndIterate(g);
+    }
+    
+    private void paintIterateAndRecurse(Graphics g) {
         BufferedImage img = new BufferedImage(1 << width, 1 << height, BufferedImage.TYPE_INT_RGB);
         Trie subtrie = trie.subtrie(ip, mask);
         
@@ -89,7 +93,13 @@ public class SupernetPanel extends JPanel {
             }
         }
         ((Graphics2D) g).drawImage(img, transform, null);
-        //g.drawImage(img, 0, 0, null);
+    }
+    
+    private void paintRecurseAndIterate(Graphics g) {
+        BufferedImage img = new BufferedImage(1 << width, 1 << height, BufferedImage.TYPE_INT_ARGB);
+        int colors[] = trie.color(ip, mask, colorChangeInterval);
+        img.setRGB(0, 0, 1 << width, 1 << height, colors, 0, 1 << width);
+        ((Graphics2D) g).drawImage(img, transform, null);
     }
     
     public static void setColorChangeInteveral(final Duration duration) {
