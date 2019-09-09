@@ -84,6 +84,7 @@ public final class SupernetFrame extends JFrame implements KeyListener {
         }
     }
 
+    // this does not work correctly in OpenJDK.
     private void setFullscreen() {
         this.dispose();
         if (isUndecorated()) {
