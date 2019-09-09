@@ -19,7 +19,7 @@ import javax.swing.JPanel;
  *
  * @author William John Holden (wjholden@gmail.com)
  */
-public class SupernetFrame extends JFrame implements KeyListener {
+public final class SupernetFrame extends JFrame implements KeyListener {
 
     private final Trie trie = new BinaryRoutingTrie();
     private final static String USAGE = "java -jar (ip-address subnet-mask description)+\n"
@@ -28,7 +28,7 @@ public class SupernetFrame extends JFrame implements KeyListener {
             = "a: show about\n"
             + "c: clear routing table\n"
             + "f: toggle fullscreen\n"
-            + "h: show this help\n"
+            + "h: show this help (also F1 and ?)\n"
             + "q: quit\n"
             + "r: refresh screen\n"
             + "+: enlarge panels\n"
@@ -39,7 +39,7 @@ public class SupernetFrame extends JFrame implements KeyListener {
             + ".: reset color change period to 1 minute\n"
             + "";
     private static final String ABOUT = "William John Holden\n"
-            + "https://github.com/wjholden/Route-Monitor/\n";
+            + "https://github.com/wjholden/Route-Monitor\n";
     
     private final List<SupernetPanel> panels = new ArrayList<>();
     
@@ -50,7 +50,7 @@ public class SupernetFrame extends JFrame implements KeyListener {
         
         transform = new AffineTransform();
 
-        setTitle("Supernet Monitor");
+        setTitle("Route Monitor");
         this.getContentPane().setBackground(Color.BLACK);
 
         for (int i = 0; i < networks.length; i += 3) {
@@ -123,6 +123,7 @@ public class SupernetFrame extends JFrame implements KeyListener {
             case 'c':
                 trie.clear();
                 break;
+            case '?': /* fall through */
             case 'h':
                 JOptionPane.showMessageDialog(this, HELP, "Help", JOptionPane.QUESTION_MESSAGE);
                 break;
@@ -171,7 +172,11 @@ public class SupernetFrame extends JFrame implements KeyListener {
 
     @Override
     public void keyPressed(KeyEvent e) {
-        // do nothing
+        switch (e.getKeyCode()) {
+            case KeyEvent.VK_F1:
+                JOptionPane.showMessageDialog(this, HELP, "Help", JOptionPane.QUESTION_MESSAGE);
+                break;
+        }
     }
 
     @Override
